@@ -29,7 +29,6 @@ export default function UpdateUserModal(props: IUpdateUserModalProps) {
   };
 
   const handleSubmit = async (values: any) => {
-    console.log('value', values)
     fetch(`${BACKEND_URL}/api/v1/users`,
       {
         method: 'PATCH',
