@@ -10,8 +10,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@types/qs": "^6.9.11",
+    "antd": "^5.13.3",
+    "qs": "^6.11.2",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "react-router-dom": "^6.22.0",
+    "sass": "1.66.1"
   },
   "devDependencies": {
     "@types/node": "20.4.6",
