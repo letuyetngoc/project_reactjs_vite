@@ -4,9 +4,12 @@ declare global {
 
     interface IUser {
         _id: string,
-        username: string,
+        name: string,
         email: string,
         role: string,
+        age:number,
+        address:string,
+        gender:string,
         isVerify: boolean,
         type: string,
         createdAt: string,
