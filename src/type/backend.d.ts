@@ -7,16 +7,38 @@ declare global {
         name: string,
         email: string,
         role: string,
-        age:number,
-        address:string,
-        gender:string,
+        age: number,
+        address: string,
+        gender: string,
         isVerify: boolean,
         type: string,
         createdAt: string,
         updatedAt: string,
         __v: 0
     }
-    
+
+    interface ITrack {
+        "_id": string,
+        "title": string,
+        "description": string,
+        "category": string,
+        "imgUrl": string,
+        "trackUrl": string,
+        "countLike": number,
+        "countPlay": number,
+        "uploader": {
+            "_id": string,
+            "email": string,
+            "name": string,
+            "role": string,
+            "type": string
+        },
+        "isDeleted": boolean,
+        "__v": number,
+        "createdAt": string,
+        "updatedAt": string
+    }
+
     interface IBackendRes<T> {
         error?: string | string[];
         message: string;
