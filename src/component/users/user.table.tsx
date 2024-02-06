@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, Col, Row, Table, Typography } from 'antd';
+import { Button, Col, Popconfirm, Row, Table, Typography, message } from 'antd';
 import type { GetProp, TableProps } from 'antd';
 import { ACCESS_TOKEN, BACKEND_URL, PAGE_SIZE } from '../../utils/constant';
 import UpdateUserModal from './update.modal';
@@ -38,34 +38,6 @@ const UserTable = () => {
     },
   });
 
-  useEffect(() => {
-    (function () {
-      setLoading(true);
-      const current = getRandomuserParams(tableParams).page
-      fetch(`${BACKEND_URL}/api/v1/users?current=${current}&pageSize=${PAGE_SIZE}`,
-        {
-          method: 'GET',
-          headers: {
-            "Content-Type": "application/json",
-            'Authorization': 'Bearer ' + ACCESS_TOKEN,
-          },
-        })
-        .then(res => res.json())
-        .then((data: IBackendRes<IUserPaginate<IUser>>) => {
-          setUsers(data.data?.result);
-          setLoading(false);
-          setTableParams({
-            ...tableParams,
-            pagination: {
-              current: current,
-              pageSize: PAGE_SIZE,
-              total: data.data?.meta.total,
-            },
-          });
-        });
-    })()
-  }, [JSON.stringify(tableParams)]);
-
   const handleTableChange: TableProps['onChange'] = (pagination, filters, sorter) => {
     setTableParams({
       pagination,
@@ -78,6 +50,57 @@ const UserTable = () => {
       setUsers([]);
     }
   };
+
+  const handleDeleteUser = async (id: string) => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/v1/users/${id}`,
+        {
+          method: 'DELETE',
+          headers: {
+            "Content-Type": "application/json",
+            'Authorization': 'Bearer ' + ACCESS_TOKEN,
+          },
+        })
+      if (res.status === 200) {
+        message.info('Delete user success!')
+        getUsers()
+      }
+    } catch (error) {
+      message.error('An error occurred, please try again!')
+      console.log('err', error)
+    }
+  }
+
+  const getUsers = () => {
+    setLoading(true);
+    const current = getRandomuserParams(tableParams).page
+    fetch(`${BACKEND_URL}/api/v1/users?current=${current}&pageSize=${PAGE_SIZE}`,
+      {
+        method: 'GET',
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': 'Bearer ' + ACCESS_TOKEN,
+        },
+      })
+      .then(res => res.json())
+      .then((data: IBackendRes<IUserPaginate<IUser>>) => {
+        setUsers(data.data?.result);
+        setLoading(false);
+        setTableParams({
+          ...tableParams,
+          pagination: {
+            current: current,
+            pageSize: PAGE_SIZE,
+            total: data.data?.meta.total,
+          },
+        });
+      });
+  }
+
+  useEffect(() => {
+    getUsers()
+  }, [JSON.stringify(tableParams)]);
+
 
   const columns: ColumnsType<IUser> = [
     {
@@ -99,26 +122,39 @@ const UserTable = () => {
       dataIndex: 'actions',
       render: (value, user) => {
         return (
-          <a onClick={() => {
-            setUser(user)
-            setIsModalOpenUpdate(true)
-          }}
-          >
-            Edit
-          </a>)
+          <>
+            <Button type="text" style={{ color: 'blue' }}
+              onClick={() => {
+                setUser(user)
+                setIsModalOpenUpdate(true)
+              }}
+            >Edit</Button>
+            <Popconfirm
+              title="Delete the user"
+              description="Are you sure to delete this user?"
+              okText="Yes"
+              cancelText="No"
+              onConfirm={() => {
+                handleDeleteUser(user._id)
+              }}
+            >
+              <Button type="text" danger>Delete</Button>
+            </Popconfirm >
+          </>
+        )
       }
     },
   ];
 
   return (
     <div style={{ width: '80%', textAlign: 'center', margin: '0 auto' }}>
-      <Row style={{marginBottom:'20px'}}>
+      <Row style={{ marginBottom: '20px' }}>
         <Col span={8}>
           <Typography>
             <Title level={2} style={{ margin: 0 }}>Table users</Title>
           </Typography>
         </Col>
-        <Col span={8} offset={8}><Button type="primary" onClick={()=>setIsModalOpenCreate(true)}>Add new</Button></Col>
+        <Col span={8} offset={8}><Button type="primary" onClick={() => setIsModalOpenCreate(true)}>Add new</Button></Col>
       </Row>
       <Table
         columns={columns}
