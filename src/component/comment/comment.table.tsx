@@ -23,8 +23,8 @@ const getRandomuserParams = (params: TableParams) => ({
     ...params,
 });
 
-const TracksTable = () => {
-    const [tracks, setTracks] = useState<ITrack[]>();
+const CommentsTable = () => {
+    const [comments, setComments] = useState<IComment[]>();
     const [loading, setLoading] = useState(false);
     const [tableParams, setTableParams] = useState<TableParams>({
         pagination: {
@@ -42,13 +42,13 @@ const TracksTable = () => {
 
         // `dataSource` is useless since `pageSize` changed
         if (pagination.pageSize !== tableParams.pagination?.pageSize) {
-            setTracks([]);
+            setComments([]);
         }
     };
 
-    const handleDeleteTrack = async (id: string) => {
+    const handleDeleteComment = async (id: string) => {
         try {
-            const res = await fetch(`${BACKEND_URL}/api/v1/tracks/${id}`,
+            const res = await fetch(`${BACKEND_URL}/api/v1/comments/${id}`,
                 {
                     method: 'DELETE',
                     headers: {
@@ -57,8 +57,8 @@ const TracksTable = () => {
                     },
                 })
             if (res.status === 200) {
-                message.info('Delete track success!')
-                getTracks()
+                message.info('Delete comment success!')
+                getComments()
             }
         } catch (error) {
             message.error('An error occurred, please try again!')
@@ -66,10 +66,10 @@ const TracksTable = () => {
         }
     }
 
-    const getTracks = () => {
+    const getComments = () => {
         setLoading(true);
         const current = getRandomuserParams(tableParams).page
-        fetch(`${BACKEND_URL}/api/v1/tracks?current=${current}&pageSize=${PAGE_SIZE}`,
+        fetch(`${BACKEND_URL}/api/v1/comments?current=${current}&pageSize=${PAGE_SIZE}`,
             {
                 method: 'GET',
                 headers: {
@@ -78,8 +78,8 @@ const TracksTable = () => {
                 },
             })
             .then(res => res.json())
-            .then((data: IBackendRes<IUserPaginate<ITrack>>) => {
-                setTracks(data.data?.result);
+            .then((data: IBackendRes<IUserPaginate<IComment>>) => {
+                setComments(data.data?.result);
                 setLoading(false);
                 setTableParams({
                     ...tableParams,
@@ -93,51 +93,44 @@ const TracksTable = () => {
     }
 
     useEffect(() => {
-        getTracks()
+        getComments()
     }, [JSON.stringify(tableParams)]);
 
 
-    const columns: ColumnsType<ITrack> = [
+    const columns: ColumnsType<IComment> = [
         {
             title: 'Stt',
             dataIndex: 'stt',
             render: (value, record, index) => index
         },
         {
-            title: 'Title',
-            dataIndex: 'title',
+            title: 'Content',
+            dataIndex: 'content',
         },
         {
-            title: 'Description',
-            dataIndex: 'description',
+            title: 'Track',
+            dataIndex: 'track',
             width: '20%',
+            render: (value, comment, index) => comment.track.title
         },
         {
-            title: 'Category',
-            dataIndex: 'category',
-        },
-        {
-            title: 'Track url',
-            dataIndex: 'trackUrl',
-        },
-        {
-            title: 'Uploader',
-            dataIndex: 'uploader',
-            render: (value, track) => track.uploader.name
+            title: 'User',
+            dataIndex: 'user',
+            render: (value, comment, index) => comment.user.name
         },
         {
             title: 'Actions',
             dataIndex: 'actions',
-            render: (value, track) => {
+            render: (value, comment) => {
                 return (
                     <>
                         <Popconfirm
-                            title="Delete the track"
-                            description="Are you sure to delete this track?"
+                            title="Delete the comment"
+                            description="Are you sure to delete this comment?"
                             okText="Yes"
                             cancelText="No"
                             onConfirm={() => {
-                                handleDeleteTrack(track._id)
+                                handleDeleteComment(comment._id)
                             }}
                         >
                             <Button type="text" danger>Delete</Button>
@@ -153,14 +146,14 @@ const TracksTable = () => {
             <Row style={{ marginBottom: '20px' }}>
                 <Col span={8}>
                     <Typography>
-                        <Title level={2} style={{ margin: 0 }}>Table track</Title>
+                        <Title level={2} style={{ margin: 0 }}>Table comments</Title>
                     </Typography>
                 </Col>
             </Row>
             <Table
                 columns={columns}
                 rowKey={(record) => record._id}
-                dataSource={tracks}
+                dataSource={comments}
                 pagination={tableParams.pagination}
                 loading={loading}
                 onChange={handleTableChange}
@@ -169,4 +162,4 @@ const TracksTable = () => {
     );
 };
 
-export default TracksTable;
+export default CommentsTable;

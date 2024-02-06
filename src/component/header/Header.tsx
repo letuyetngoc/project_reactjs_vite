@@ -1,7 +1,8 @@
 import { Tabs, TabsProps } from "antd";
-import { HomeOutlined, UserOutlined, AudioOutlined } from '@ant-design/icons';
+import { HomeOutlined, UserOutlined, AudioOutlined, CommentOutlined } from '@ant-design/icons';
 import UserPage from "../../screen/user.page";
 import TracksTable from "../track/track.table";
+import CommentsTable from "../comment/comment.table";
 
 export default function Header() {
   const items: TabsProps['items'] = [
@@ -23,17 +24,21 @@ export default function Header() {
       children: <TracksTable/>,
       icon: <AudioOutlined /> 
     },
+    {
+      key: '4',
+      label: 'Manage Comments',
+      children: <CommentsTable/>,
+      icon: <CommentOutlined />
+    },
   ];
   const onChange = (key: string) => {
     console.log(key);
   };
   return (
-    <>
       <Tabs
         defaultActiveKey="1"
         items={items}
         onChange={onChange}
       />
-    </>
   )
 }

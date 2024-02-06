@@ -147,7 +147,7 @@ const UserTable = () => {
   ];
 
   return (
-    <div style={{ width: '80%', textAlign: 'center', margin: '0 auto' }}>
+    <div style={{textAlign: 'center'}}>
       <Row style={{ marginBottom: '20px' }}>
         <Col span={8}>
           <Typography>
